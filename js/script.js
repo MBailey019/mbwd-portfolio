@@ -88,7 +88,7 @@ YTrip.prototype.add = function(yTripper){
 	this.trippers.push(yTripper);
 }
 YTrip.prototype.initCurrentTripper = function( currentSY ){
-//console.log("CurY: "+ currentSY+ " | last: "+this.trippers[this.trippers.length-1].y);
+	console.log("CurY: "+ currentSY+ " | last: "+this.trippers[this.trippers.length-1].y);
 	for (i = 0; i<this.trippers.length-1; i++) {
 		if( this.trippers[i].y < currentSY && this.trippers[i+1].y > currentSY){
 			this.currentTripper = i;
@@ -98,26 +98,20 @@ YTrip.prototype.initCurrentTripper = function( currentSY ){
 		this.currentTripper = this.trippers.length-1;
 	}
 	this.trippers[this.currentTripper].downFunc();
-	//console.log(this.currentTripper,this.trippers[this.currentTripper].downFunc);
 }
 YTrip.prototype.checkTrippers = function(sY, oldSY, direction){
-	//console.log("check t " + direction);
-	if (direction == "down"){
-		//@TODO fix this for lasi item...might be necessary to change
-		//function assignment for last item
+	if (direction == "down" && this.trippers[this.currentTripper+1]){
 			if (oldSY-1 < this.trippers[this.currentTripper+1].y &&
 			  sY+90 > this.trippers[this.currentTripper+1].y) {
 				this.currentTripper++;
 				this.trippers[this.currentTripper].downFunc();
 			}
 		//}
-	}else{
-		if (this.currentTripper != 0 ){
-			if (oldSY+90 > this.trippers[this.currentTripper].y &&
-			  sY < this.trippers[this.currentTripper].y) {
-				this.trippers[this.currentTripper].upFunc();
-				this.currentTripper--;
-			}  
+	}else if (direction == "up" && this.currentTripper != 0 ){
+		if (oldSY+90 > this.trippers[this.currentTripper].y &&
+		  sY < this.trippers[this.currentTripper].y) {
+			this.trippers[this.currentTripper].upFunc();
+			this.currentTripper--;
 		}	
 	}
 }
@@ -205,12 +199,14 @@ $(document).ready(function () {
 			var anchor = $(this).attr("href").slice(1); 
 			if ( anchor != "" ){
 				var offset = $('section#'+anchor).offset();
-				var scrollTo = offset.top-89+scrollY();
+				var scrollTo = offset.top+scrollY();
+				if (scrollTo > 90) scrollTo -= 89;
 				console.log(anchor, offset.top);
 				didScroll = true;
 				theWindow.animate( {scrollTop: scrollTo}, 500, function(){
 					didScroll = false;
 				});
+				tList.initCurrentTripper(scrollTo+1);
 			}	
 			mainMenu.setDisplayText(anchor);
 		}).trigger( "scroll", window );
