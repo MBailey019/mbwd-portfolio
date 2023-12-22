@@ -285,7 +285,7 @@ input#nav {
     border: none;
     background: transparent;
     color: white;
-    outline: none;
+    outline-color: transparent;
 }
 svg#toggle {
     fill: white;
